@@ -21,11 +21,23 @@ namespace DotNetCoreOracleDb.Controllers
             _asset = new A_AssetRepository();
         }
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             IEnumerable<A_ASSETS> assets = new List<A_ASSETS>();
-            assets = _asset.A_ASSETs();
+            assets = await _asset.A_ASSETs();
             return Ok(assets);
+        }
+        [HttpGet("{assetid}")]
+        public async Task<IActionResult> GetAsset(string assetid)
+        {
+            A_ASSETS aSSETS = new A_ASSETS();
+            aSSETS = await _asset.GetASSETS(assetid);
+            if (assetid == null)
+                return BadRequest();
+            if (aSSETS == null)
+                return NotFound();
+
+            return Ok(aSSETS);
         }
     }
 }
