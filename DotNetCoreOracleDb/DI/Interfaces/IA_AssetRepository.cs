@@ -8,7 +8,7 @@ namespace DotNetCoreOracleDb.DI.Interfaces
 {
     public interface IA_AssetRepository
     {
-        IEnumerable<A_ASSETS> A_ASSETs();
-        A_ASSETS GetASSETS(string id);
+        Task<IEnumerable<A_ASSETS>> A_ASSETs();
+        Task<A_ASSETS> GetASSETS(string id);
     }
 }

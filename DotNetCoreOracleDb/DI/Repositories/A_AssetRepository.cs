@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,12 +19,12 @@ namespace DotNetCoreOracleDb.DI.Repositories
         {
             _helper = new AdoHelper(configuration);
         }
-        public IEnumerable<A_ASSETS> A_ASSETs()
+        public async Task<IEnumerable<A_ASSETS>> A_ASSETs()
         {
             List<A_ASSETS> a_assets = new List<A_ASSETS>();
             string query = "select * from A_ASSET";
             OracleDataReader reader= _helper.ExecDataReader(query);
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 A_ASSETS a_asset = new A_ASSETS
                 {
@@ -35,12 +36,23 @@ namespace DotNetCoreOracleDb.DI.Repositories
             reader.Close();
             return a_assets;
         }
-
-        public A_ASSETS GetASSETS(string id)
+        
+        public async Task<A_ASSETS> GetASSETS(string id)
         {
-            A_ASSETS a_asset = new A_ASSETS();
-            string query = "select * from A_ASSET where";
-
+            A_ASSETS a_asset = null;
+            string query = "select * from A_ASSET where ASSETID= '"+id+"'";
+            object[] pars = new object[] { new OracleParameter("ASSETID", id) };
+            OracleDataReader reader = _helper.ExecDataReader(query);
+            if(await reader.ReadAsync())
+            {
+                 a_asset = new A_ASSETS
+                {
+                    A_ASSETID = reader["ASSETID"].ToString(),
+                    A_ASSETNAME = reader["ASSETDESC"].ToString()
+                };
+            }
+            reader.Close();
+            return a_asset;
         }
     }
 }
